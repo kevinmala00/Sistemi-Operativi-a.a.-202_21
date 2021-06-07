@@ -1,0 +1,19 @@
+10GIU20: 
+        - comunicazione pipe padre-figlio (i figli scrivono solo e il padre legge solo)
+        - scrittura su pipe con dimensioni variabili, solo se ci sono determinate condizioni
+        - File diverso per ogni figlio 
+        - Lettura di una linea alla volta
+
+17GIU20:       
+        - comunicazione pipe padre-figlio (i figli scrivono solo e il padre legge solo)
+        - scrittura su pipe con dimensione massima stabilita
+        - valore di ritorno dei figli stabilito
+        - lettura da file di un blocco di dimensione stabilita
+        - file uguale per ogni figlio (va aperto nei figli), uso di lseek
+
+31MAG19:
+        - controllo lasco 
+        - N file da associare ad N figli
+        - comunicazione padre-figlio-nipote 
+                (nipote apre il file ordina e invia la prima linea
+                        figlio legge e modifica una struttura dati che invia al padre)

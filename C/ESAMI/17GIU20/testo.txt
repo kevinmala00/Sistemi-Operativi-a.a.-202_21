@@ -1,0 +1,21 @@
+TESTO PARTE C: ATTENZIONE LEGGERE ANCHE LA NOTA SEGUENTE AL TESTO!
+La parte in C accetta tre parametri F, L e B che rappresentano le seguenti informazioni:
+- F un nome di file;
+- B un numero intero strettamente positivo;
+- L un numero intero strettamente positivo, che rappresenta la dimensione (in caratteri) di F ed è un multiplo
+di B (entrambe queste caratteristiche non importa siano controllate).
+Il processo padre deve, per prima cosa, aprire/creare (CHI SVOLGE LA SOLA PARTE C LO DEVE CREARE,
+MENTRE CHI SVOLGE TUTTO LO DEVE SOLO APRIRE) un file con lo stesso nome di F a cui è stata aggiunta
+l’estensione “.Chiara” e quindi deve creare un numero di figli pari a B., tutti associati al file F.
+Ogni processo figlio Pq esegue in modo concorrente e legge il blocco q-esimo del file F (ad esempio, se la
+dimensione L del file F è 80 byte e B è 10, il processo q-esimo legge i byte da q*80/10 a (q+1)*80/10-1, con
+q che varia tra 0 e 9): dopo la lettura del proprio blocco (con una singola read), ogni processo figlio Pq deve
+comunicare al padre l'ultimo carattere del blocco. Il padre deve ricevere, rispettando l’ordine dei blocchi
+(quindi quello di creazione dei processi), i caratteri inviati dai figli e li deve scrivere sul file aperto/creato.
+Al termine dell’esecuzione, ogni figlio Pq ritorna al padre la dimensione del blocco esaminato (supposta
+strettamente minore di 255); il padre deve stampare su standard output il PID di ogni figlio, insieme con il
+numero d’ordine di creazione q, e il valore ritornato.
+NOTA BENE NEL FILE C main.c SI USI OBBLIGATORIAMENTE:
+- una variabile di nome B per il numero di processi figli;
+- una variabile di nome q per l’indice dei processi figli;
+- una variabile di nome buff per memorizzare il blocco letto da ogni figlio

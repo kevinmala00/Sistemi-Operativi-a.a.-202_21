@@ -1,0 +1,12 @@
+/*VALORI DI RITORNO:
+    -1: errore generico nei figli
+    1: errore nel numero di parametri passati
+    2: errore nel tipo di parametri
+    3: errore in allocazione della memoria
+    4: errore nella creazione delle pipe
+    5: errore nella wait
+    6: errore nella fork (generazionme dei processi)
+    7: errore nell'apertura/creazione di file nel padre
+    8: errore nella lettura dalla pipe
+    9: errore nella scrittura dalla pipe
+*/

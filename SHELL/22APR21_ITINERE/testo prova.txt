@@ -1,0 +1,19 @@
+SISTEMI OPERATIVI E LAB.
+(A.A. 20-21) 22 APRILE 2021
+TURNO 2
+
+Esercizio
+Si 	un programma concorrente per UNIX che deve avere una parte in Bourne Shell e una parte in
+c
+TESTO PARTE SHELL: ATTENZIONE LEGGERE ANCHE LA NOTA SEGUENTE AL TESTO'.
+La parte in Shell deve prevedere un numero variabile di parametri M+2 (con M strettamente maggiore di 1): il primo parametro deve essere considerato un nutnero intero strettamente positivo (Y), il secondo parametro deve essere una stringa (w) mentre gli altri M devono essere nomi assoluti di directory che identificano M gerarchie (Gl, G2, .. . ) all'interno del file system. Il comportamento atteso dal programma. dopo il controllo dei parametri, è organizzato in M fasi, una per ogni gerarchia.
+Il programma, per ognuna delle M fasi, deve esplorare la gerarchia dir corrispondente - tramite un file comandi ricorsivo, FCR.sh e deve contare globalmente tutte le directory (inclusa la radice della gerarchia) che contengono almeno un file il cui nome abbia terminazione .w.
+Al termine di tutte le M fasi, si deve riportare sullo standard output il numero totale di directory trovate globalmente (che soddisfano la condizione sopra indicata).
+Sc talc conteggio risulta strettamente maggiore di Y, si deve chiedere all'utente, chiamandolo con il proprio nome di battesimo (in caso di nome multipli, se ne scelga uno) un nunlero intero J compreso fra I e Y; quindi, si deve selezionare la directory corrispondente al numero J e di tale directory si dese riportare su standard output il nome assoluto.
+
+NOTA BENE NEI DUE FILE COMANDI SI USI OBBLIGATORI x MENTE:
+una variabile di nome Y per contenere il primo parametro di FCP.sh:
+una variabile di nome w per contenere il secondo parannetro di FC P.sh:  nome /tmprremporanco per il file temporaneo
+una variabile di nome dir per le singole gerarchie di ognuna delle M fasi:
+una variabile di nome K per identificare. via via. i singoli tile delle directory esp10Rite e della directory  sclczjonata;
+una variabile dl nome J per contenere il nutnero letto.

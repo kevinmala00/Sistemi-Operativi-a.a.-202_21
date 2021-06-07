@@ -1,0 +1,467 @@
+14/04
+	C: COME LINGUAGGIO DI SISTEMA UNIX
+	Caratteristiche:
+		- visibilità della dimensioni delle variabili -> sizeof
+		- possibilità di agire sugli indirizzi -> &
+		- operatori di basso livello ->
+	
+	df 			permette di vedere i dischi fisici montati 
+				nome assoluto nel file system   1k-blocks 	used 	available 	use%	mounted on
+				/dev/sdb1						256875684	33445	25566987	25		/home
+		-i		come df ma rappresenta gli i-node invece che i k-blocks
+	NB: è possibile creare link hw solo nello stesso file system fisico mentre i link so si possono creare anche tra diversi file system 
+	NB: ls -l /dev/sda2 	il primo campo inizia con 'b' poi ci sono i diritti, b -> dipsosistiv organizzati a blocchi
+		ls -l /dev/tty		il primo campo inizia con 'c' poi ci sono i diritti, c -> dispositivi organizzati a caratteri (schermo tastiera)
+	
+	OPEN 
+		int open(const char *pathname, int flags);
+			
+			@libraries
+				#include <fcntl.h>
+				
+			@params
+				pathname: nome del file da aprire
+				flags: indica la modalità di apertura del file:
+				#include <fcntl.h> include le seguenti macro:
+			
+			@output 
+				ritorna il fd del file aperto (se < 0 errore)
+	
+	CREAT 	
+		int creat(const char *pathname, mode_t mode);
+			
+			@libraries
+				#include <fcntl.h>
+				
+			@params
+				pathname: nome del file da aprire
+				mode: indica i diritti da assegnare al file al momento della creazione
+				
+			@output 
+				ritorna il fd del file creato (se < 0 errore)
+	
+	CLOSE 
+		int close(int fd);
+			
+			@libraries
+				#include <unistd.h>
+			
+			@params
+				fd: indica il fd del file da chiudere
+				
+			@output 
+				ritorna un 
+19/04
+	man -s 2 <primitiva>	serve  per avere informazioni sulle primitive, serve però far riferimento alla sezione 2.
+	
+	PRECISAZIONE SU argc/argv E $#/$*
+		$# corrisponde ad argc - 1
+		$* è la lista dei parametri $0 escluso
+		argv è la lista dei parametri 
+		
+		
+	READ	
+		int read(int fd, char *buf, int n); 			
+			
+			@libraries
+				#include <unistd.h>
+			
+			@params
+				n -> numero di byte da leggere
+				fd -> file descriptor	
+				buf -> indirizzo iniziale in memoria da cui partire a leggere
+			
+			@return 
+				nread -> numero di byte effettivamente letti, se è != n allora problemi nella lettura 
+							se < 0 allora stiamo cercando di leggere oltre EOF
+			
+	WRITE
+		int write(int fd, char *buf, int n);
+
+			@libraries
+				#include <unistd.h>
+			
+			@params
+				fd 
+				n-> numero di byte da scrivere
+				buf -> inidirizzo iniziale in memoria dei dati da scrivere sul file
+			
+			@return 
+				int nwrite -> numero di byte effettivamente scritti, se != n allora c'è stato un errore in scrittura
+
+	NB: oltre che scrivere e leggere le funzioni modificano il file pointer
+	NB: buf può essere un area di memoria definita tramite array in modo statico o in modo dinamico, in ogni caso la sua dimensione dovrà essere > n
+		
+	exit(..); != return ..; 	poichè exit termina il processo mentre return termina la compilazione del codice corrente
+								(es funzione), quindi in caso di main hanno lo stesso risultato in caso di funzione chiamata da main allora exit termina il processo e non verrà eseguita il codice nel main successiovo alla chiamata della funzione
+	
+	umask 		se vogliamo cambiare i diritti di un file es: da 644 a mode(666) umask 
+				mode 666 -> 110 110 110
+				umask 022 -> 000 010 010
+				not umask    111 101 101
+				
+				perciò i diritti del file creati 
+				mode & not umask
+				110 110 110 &
+				111 101 101
+				===========
+				110 100 100 -> 644 
+				
+				quindi per questioni di sicurezza, il SO ci permette di cambiare i diritti solo con chmod
+
+21/04
+	RIDIREZIONE COMANDI
+	es: prova.sh < dati > risultati
+	che cosa succede:
+		close(0);						-> chiude il file attivo relativo alla stdin
+		open("dati", O_RDONLY);			-> dato che il primo fd è l'elemento 0 si inserisce al posto di stdin il file dati
+		close(1);						-> come i due comandi precedenti
+		open("risultati", MODO);
+	
+	LSEEK
+		int lseek(int fd,long offset, long origin);
+			
+			@libraries
+				#include <unistd.h>
+				
+			@params
+				offset -> spostamento dall'origine specificata, può essere positivo o negativo
+				origin 	-> rappresenta la posizione inizia da cui spostarsi 
+									0 (inizio del file), 1 (posizione corrente nel file), 2 (fine del file)
+									oppure
+									#include <unistd.h> contiene le seguenti macro:  
+									SEEK_SET (inizio del file), SEEK_CUR (posizione corrente nel file), SEEK_END (fine del file)
+									
+			@returns 
+				newpos -> numero di byte a partire dall'inizio del file, posizione del file pointer
+			
+			NB: lseek non ritorna un errore in caso si sfori il file in avanti o indietro
+			NB: le costanti long vanno indicate con numL 	es:0L	indichereebe di spostarsi di 0 byte in caso di lseek
+	
+	OPEN -APPROFONDIMENTO-
+		int open(const char *pathname, int flag, mode_t mode);
+			
+			@libraries
+				#include <unistd.h>
+				#inlcude <fcntl.h>
+				
+			@params
+				mode -> diritti (vedi umask)
+				nel file fcntl.h sono contenuti ulteriori flag:
+					O_APPEND: aggiunge in fondo al file, utilizzabili con O_WRONLY, O_RDONLY
+					O_TRUNC: distrugge il contenuto se il file esiste
+					O_CREAT: crea il file se non esiste, bisogna specificare il terzo parametro mode
+					O_EXCL: fallisce se il file è già esistente
+				
+				es: flag = O_CREAT | O_WRONLY 	-> | è loperatore di or bit a bit 
+				
+			@return 
+				fd
+
+23/04
+	COMPILAZIONE DI PROGRAMMI IN C 
+	touch 	modifica la data dell'ultima modifca del file (in modo che il compilatore lo veda come nuovo file)
+	
+	GCC					
+			gcc prende in pasto i file sorgenti ( .c), effettua preprocessing (risolvendo include e define), compila i file sorgenti producento i file oggetto per poi linkarli insieme per produrre l'eseguibile (di default di nome a.out)
+		
+		gcc <dipendenze>				permette di creare l'eseguibile
+			-o <name> <dipendenze>		permette di modificare il nome del file eseguibile
+			-c <dipendenze>				si ferma alla compilazione, produce di default il file oggetto collegato alla dipendenza
+			
+			NB: in caso i dure file passati come parametri a gcc fossero dei file oggetti non fa altro che eseguire il linking di essi
+			
+	MAKE 
+			necessita del file Makefile con la seguente sintassi 
+			
+			<variables>
+			
+			target: dipendenze
+					comando
+				
+			
+				variables: 
+					CC=gcc 		identifica che il compilatore usato è gcc
+					CFLAGS="-w -std=c11"	 identifica i vari flags da utilizzare ad es:
+						-Wall 		abilita i warnings
+						-w			disabilita i warnings
+						-std=c11	indica che lo standard da usare è quella del c11
+						
+				NB: per utilizzare il valore delle variabili è necessario espanderle nel seguente modo $(var)
+				nel Makefile si possono utilizzare le pattern rules:
+					$@	identifica il target
+					$< identifica le dipendeze
+
+26/04
+	PROCESSI IN UNIX
+		ogni processo ha un suo spazio di indirizzamento locale e non condiviso, il file system è l'unica risorsa condivisa.
+		i processi sono rientranti, possono eseguire lo stesso codice senza problemi, questo avviene pocihè ad ogni processo viene assegnata un apropria area dati 
+		processi gestiti a divisione di tempo con più livelli di priorità variabile (round robin + aging)
+		la gestione della memoria prevede l'uso di memeoria visrtuale intrgrata con swapping (processi non necessarei copiarti al di fuori della memoria centrale in memoria secondaria)
+		modi di esecuzione di un processo: 
+			- user mode
+			- kernel mode -> unico modo in cui avviene l'esecuzione delle primitive
+		
+	FORK	permette di generare un processo figlio
+		int fork();
+			
+			@libraries
+				#include <unistd.h>
+				
+			@return 
+				ritorna un int che corrisponde al pid del processo figlio (nel processo padre)
+				ritorna 0 (nel processo figlio)
+				ritorna -1 in caso di errore
+				
+				NB: è possibile dividere il codice eseguito dal figlio da quello dal pare in base al valore di ritorno della fork
+
+			cosa avviene con la fork?
+			- si inserisce una nuova entry nella tabella dei processi (il nuovo processo ha un fd che eredita uid e guid del processo padre e anche lo stesso PC (program counter) il figlio è in stato IDLE, l'esecuzione del processo figlio parte dall'istruzione successiva alla chiamata della fork
+			- si crea una area dati utenti per il figlio che è una copia di quella del padre
+			- il figlio esegue lo stesso codice del padre
+			- si crea un nuovo processo nella kernel area come copia di quella del padre (tabella dei file aperti e stato dei segnali)
+			- si inserisce il fd del figlio nella coda dei processi prontio il figlio è in stato READY.
+	
+	GETPID	
+		int getpid();
+			
+			@returns
+				ritorna il pid del processo in esecuzione
+	GETPPID
+		int getppid();
+		
+			@retunrs
+				ritorna il ppid del processo in esecuzione
+			
+28/04
+	WAIT 
+		int wait(int *status);
+		
+			@libraries
+				#include <sys/wait.h>
+				
+			@params
+				status -> viene considerato di dimensione pari a 2byte
+				
+				+---------------+-----------+-----------+
+				|	bytes		|	byte	|	byte	|
+				|	ignorati	|	alto	|	basso	|
+				+---------------+-----------+-----------+
+				
+				nel byte basso è contenuto il valore 0 in caso di succeesso e >0 in caso di segnale di errore
+				nel byte alto è contenuto il valore di riotnro del processo figlio
+				
+					NB: vedi come isolare i singoli byte esempio interattivo
+			
+			@return 
+				ritorna il pid del processo figlio terminato
+				ritorna -1 se il processo non ha figli da aspettare
+			
+			NB nella libreria sono anche incluse le seguentei macro:
+				WIFEXITED(status)
+				WEXITSTATUS(status)
+				WIFSIGNALED(status)
+				WTERMSIG(status)
+				
+	EXIT 	provoca la terminazione di un processo
+		void exit (int status);
+		
+			@libraries
+				#include <unistd.h>
+			
+			@params
+				status -> corrisponde al valore di ritorno tritornato alla teminazione del processo
+			
+	
+	SLEEP
+		void sleep(int time);
+			
+			@params
+				time -> rappresenta il tempo di sospensione che si vuole simulare es:4 = 4 secondi di sospensione
+
+	ESECUZIONE DI UN PROGRAMMA
+	con la famiglia di primitive exec e permesso cambiare il programma che un processo sta eseguendo; non produce un nuovo processo ma semplicemente vi è il cambiamento dell'area dati utente del processo interessato, sia di area di codice che area di dati. NON prevede di tornare al programma chiamante, in quanto exec rappresenterebbe un GO TO, si ritrona alla istruzione successiva all'exec solo in caso di errore
+	
+	EXEC
+		void execv(char *pathname, char **argv);
+		
+			@params
+				pathname-> nome di un file eseguibile
+				argv->contiene la lista dei parmaetri (modalità main)
+				
+		
+		void execl(char *pathname, char *arg0, ..., char *argN, (char *)0);
+		
+			@params
+				pathname-> nome di un file eseguibile
+				arg0...N-> lista dei parametri da passare al nuovo file eseguibile posto in esecuzione 
+				(char *)0-> deve essere posto dopo i parmaetri passati
+		
+		void execvp(char *name, char **argv);
+		
+			@params
+				name-> nome di un file comandi
+				argv->contiene la lista dei parmaetri (modalità main)
+		
+		void execlp(char *name, char *arg0, ..., char *argN, (char *)0);
+		
+			@params
+				pathname-> nome di un file comandi 
+				arg0...N-> lista dei parametri 
+				(char *)0-> deve essere posto dopo i parmaetri passati
+		
+				
+		NB: per convenzione argv[0] e arg0 corrissponde al programma eseguibile mandato in esecuzione
+		NB: in caso si utilizzo delle versioni p bisogna aggiornare il PATH, in quanto l'exec ricerca nella directory corrente
+		
+03/05
+	BIT DELL'I-NODE
+	Oltre ai 9 bit dei permessi trovaimo altri bit speciali, questi sono posti dopo ogni tripletta dei permessi
+	
+	SUID	(set-user-id)
+		se è a 1 in un file (con proprietario U) che contiene un file eseguibile, il processo dell'utente U1che lo manda in esecuzione viene considereato il porprietario U per la durate dell'esecuzione 
+		es: il comando passwd (che permette ad un utente di cambiare la propria password) ha il SUID settato dato che va a leggere e modificare il file /etc/shadow (di proprietà di root)
+		
+		NB: per settare il SUID si utilizza il comando 
+			chmod u+s namefile
+	SGID	(set-group-id)
+		stesso ragionamento di SUID riguardante il GID
+	
+	
+	INTERAZIONE TRA PROCESSI UNIX
+	PIPE
+		int pipe(int piped[2]);
+		
+		@libraries
+			
+			
+		@params
+			piped -> vettore di interi in cui vengono memorizzati i fd dei file aperti che rappresentano le due estremità del canale di comunicazione
+			
+		@return
+			0 in caso si successo 
+			negativo in caso di insuccesso
+		
+		Caratteristiche:
+			-dimensione fissa
+			-la pipe è una struttura che viene smaltita al termine del processo
+			-gestione FIFO dei dati 
+			
+
+05/05
+	per determinare il verso di una pipe bisogna che ogni processo chiuda il canale che non deve utilizzare con una close(piped[indice]);
+	Dato che il figlio eredita anche al TFA (tabella dei file aperti) dal padre si riesce a gestire la stessa pipe quindi i canali di comunicazioni vengono visti appunto come file aperti
+	
+						+-----------+
+					<-  | piped[0]	| -> 
+		PADRE			+-----------+			FIGLIO
+					->  | piped[0]	| <- 
+						+-----------+
+						
+	NB: vi è una funzione bloccante nelle pipe, ovvero che se viene chiuso il lato di scrittura dal processo produttore mentre il consumatore sta leggendo, questa lettura viene bloccata e si interrompe, vale lo stesso per il viceversa
+	ne deriva che non è necessario interrompere la read in modo particolare in quanto si interrompe quando viene interrotta la scittura
+						
+10/05
+	DUP
+		duplica un elemento della tabella dei file aperti di processo 
+		
+		int dup(int fd);
+		
+			@libraries
+				#include <unistd.h>
+				
+			@params
+				fd del file da copiare 
+				
+			@retunrs
+				il nuovo fd del file aperto copiato 
+				-1 in caso di errore
+				
+		NB: nell'esempio shellpipe.c si vuole sostituire lo stdout utilizzato dal comando posto in esecuzione dal comando p3 con lato della pipe tra p2-p3 predisposto alla lettura, inoltre si vuole sostituire lo stdin utilizzato dal comando posto in esecuzione dal processo p2 con il lato della pipe predisposta alla lettura.
+		
+			/* in p3 */
+			close(1);
+			dup(piped[1]);		-> sostituisce a stdout piped[1]
+			close(piped[0]); close(piped[1]);
+			
+			/* in p2 */
+			close(0);
+			dup(piped[0]);		-> sostituisce a stdin piped[0]
+			close(piped[0]); close(piped[1]);
+	
+12/05
+	SINCRONIZZAZIONE IN UNIX
+	man -S 7 signal		permette di visualizzare l'elenco dei segnali presenti in unix
+
+17/05
+	se durante un processo viene inviato il segnale SIGILL, relativo a un'istruzione non consentita, il 
+	
+	ulimit
+	
+	SIGNAL
+		permette la gestione in caso di intercettamento di un segnale 
+		
+		
+		typedef void (*sighandler_t) (int);		-> definizione del tipo puntatore a funzione che accetta un parametro int e restituisce void
+		
+		sighandler_t signal(int signum, sighandler_t handler);
+		
+		
+			@libraries
+				#include <signal.h>
+			
+			@param
+				signum -> numero del segnale
+				handler -> funzione specificata di gestione del segnale, chiamata in caso di presenza del segnale signum
+				
+				NB: si può scegliere di eseguire l'azione di defaul legata al segnale ponendo handler come SIG_DFL
+				NB: si può scegliere di ignorare il segnale ponendo handler come SIG_IGN
+		
+			@return
+				ritorna il tipo sighandler_t 
+				
+	KILL 
+		invia un segnale ad un specifico processo
+		
+		int kill(int pid, int signum);
+		
+			@libraries
+				#include <sys/types.h>
+				#include <signal.h>
+			@param
+				pid: process identifier del processo destinatario del segnale
+				signum: numero di segnale da inviare al processo
+			@return
+				ritorna l'esito della kill, 0 al successo, -1 in caso di errore
+				
+		NB: l'euid che effettua la kill deve essere uguale a quello del processo a cui viene inviato il segnale
+	
+	PAUSE
+		sospende il processo fine alla ricezione di un qualsiasi segnale
+		
+		int pause():
+		
+	SLEEP
+		sospende in modo temporizzato, può essere interrotta dall'arrivo di segnali
+		
+		unsigned int sleep(unsigned *int numerodisecondi);
+		
+			@param
+				numerodisecondi: numero di secondi di pause che il processo deve effetuutare
+			
+			@return
+				0 se la sospensione non è stat interrotta da segnali
+				numero di secondi di sospensione non utilizzati (se il segnale è giunto al tempo ns allora il valore ritornato sarà numerodisecondi-ns)
+				
+	ALARM
+		installazione di un allarme, ovvero gli viene inviato il segnale SIGALRM
+		
+		unsigned int alarm(unsigned int numerodisecondi);
+		
+			@param
+				numerodisecondi: numero di secondi di pause che il processo deve effetuutare
+			
+			@return
+				0 se non si sono attivati allarmi durante il tempo definito
+				numero di secondi di mancanti allo scadere del time-out impostato
+		NB: di default l'azione corrispettiva a SIGALRM è la terminazione

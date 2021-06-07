@@ -1,0 +1,385 @@
+-	Dopo aver avviato Ubuntu per aprire editor di testo Linux CTRL + ALT + F3
+-	Per eseguire il log out premere CTRL + D o scrivere il comando exit
+
+PERCORSI FILE
+	/ 		directory radice 
+	bin 	comandi principali del sistema
+	dev 	dispositivi
+	etc 	file sisgnificativi per il sistema
+	home	directory degli utenti
+	lib 	librerie di sistema
+	tmp 	file temporanei
+	usr 	librerie e comandi specifici per gli utenti
+
+	formato file /etc/passwd: 
+		utente:password:UID:GID:commento:directory:comando
+				- utente -> username utilizzato per il login
+				- password
+				- UID -> user identifier
+				- GID -> group identifier
+				- commento -> commento impostato dall'utente
+				- directory -> directory in cui è contenuto l'utente
+				- comando -> comando che va in esecuzione al login, ad esempio la shell (tipo bash)
+				
+		es: kevinmala00:x:1000:100:Kevin,,,:/home/kevinmala00:/bin/bash
+		
+		
+COMANDI EDITOR DI TESTO (VI)
+- spostamenti
+	frecce
+	w 			salta all'inizio della parola successiva
+	b			salta all'inizio della parola precedente
+	$			salta a fine riga corrente	
+	0			salta a inizio riga
+	ENTER		scende di una riga
+	WHITESPACE	si sposta al carattere successivo
+	BACKSPACE	si sposta al carattere prcedente
+	e			salta alla fine della parola corrente
+	+           salta all'inizio della riga successiva
+	-			salta all'inizio della riga precedente
+	
+- modifica del testo
+	i					insert
+	ESC 				esce dall'insert
+	a					append dal cursore
+	A					append a fine riga
+	o					append dopo riga corrente
+	O					append prima di riga corrente
+	x					cancella carattere
+	db					cancella la parte di parola dall'inizio fino al cursore
+	dw 					cancella la parte di parola dal cursore fino alla fine
+	dd					cancella linea corrente
+	d$ o D				cancella dal cursore fino alla fine della riga
+	r <ch>				sostituisce carattere corrente con quello specificato da <ch>
+	/<string> 			cerca la <string> nel testo
+			poi n		salta alla prossima occorrenza 
+			poi N		salta all'occorenza successiva 
+	.					ripete azione appena compiuta
+	U 					indietro come CTRL Z  in Windows
+	J					append tra riga corrente e riga successiva
+	Y					copia tutto il testo
+	yy					copia linea corrente
+	dd 					taglia linea corrente
+	P					incolla prima della linea corrente
+	p					incolla dopo linea corrente
+	
+- fuori dall'insert
+	:<n>				si sposta all'inizio della n-esima riga
+	:set nu				enumera le righe
+	:set nonu			elimina l'enumerazione delle righe	
+	:$					salta all'inizio dell'ulyima riga
+	:w					salva file
+	:wq					salva ed esce dall'editor
+	:q					esce dall'editor in caso non ci siano modifiche
+	:q!					esce dall'editor senza salvare
+	
+
+		
+COMANDI LINEA DI COMANDO
+	ls			 		(list) fa la lista delle directory presenti nella directory esplicitata nel <path>
+		-l 				come ls ma fornisce più dettagli
+						es:		1° colonna: -=file, d=directory, l=link; 
+								9 bit di protezione (r=lttura,w=scrittura,x=esecuxione) se presente la lettera è possibile, 
+										sono divisi in triplette (diritti di accesso) 	UID GUID OTHERS	
+								numero di link hw presenti nel sistema per quel file, n° di nomi assoluti
+								UID
+								GID
+								dimensione in bit
+								data ultima modifica
+								nome file
+								-rw-r--r--	1	root	root	4026	mar 17 2021		filename
+		-a				effettua la lista di tutti i file anche quelli nascosti
+		-r				operazione ricorsiva anche delle sottocartelle delle directori in ordine alfabetico contrario 
+		-R				come -r solo che in ordine alfabetico
+		-A 				come -a solo che esclude . e ..
+		-F				lista i file eseguibili con suffisso * e le directory con suffisso \
+		-d 				lista solo le cartelle 
+		-i				fornice come dettaglio anche gli I-NUMBER
+		-t				lista i file in ordine di ultima modifica
+								
+	
+	cat + <path>		apre il percorso specificato in <path>
+	cat +<path1>+<path2> permette di concatenare il contenuto dei due file (lo stampa su stdout)
+	pwd					(printing working directory) stampa il percorso della directory corrente
+	cd + <path>			(change directory) cambia la directory corrente in quella specificata da <path>
+	cd					se <path> non viene messo porta alla home directory
+	echo $HOME			directory home dell'utente (quella contenuta nel file /etc/passwd)
+	sudo				comando che permette di far eseguire comandi vincolati al superutente root da utenti privilegiati detti sudoers
+	exit 				termina la sessione (in caso di shell aperte una dentro l'altra chiude la schell corrente)
+	ps					(process status) mostra i processi in corso e i loro stati
+		-f				aumenta i dettagli dati da ps
+		-fl
+		-fe				mostra tutti i processi relativi a tutto il sistema quindi di tutti gli utenti
+				es: ps 			PID	TTY	TIME CMD			PID: process identifier TIME: tempo di esecuzione CMD: processo TTY: terminale 
+					ps -f		UID PID PPID C STIME TTY TIME CMD		PPID: pid del padre 
+					ps -fl		F S UID PID PPID C PRI NI ADDR SZ WCHAN STIME TTY TIME CMD		S: stato del processo 
+					
+					se TTY = ? non sono collegati a nessun terminale
+					CMD isgnificativi: se iniziano con k sono relativi al kernel
+					
+					
+	man	<cmd>			mostra la descrizione di <cmd> (per sfogliare WHITESPACE o ENTER)
+	which <cmd>			mostra in che cartella si trova il comando
+	whereis <cmd>		come which ma inoltre mostra anche le pagine del manuale relative a <cmd>
+	sh 					viene invocata la BOURNE SHELL
+	bash 				viene invocata la BASH (bourne again shell)
+	id 					mostra UID GUID GROUPS corrente
+	who					mostra gli utenti collegati contemporaneamente (multiutenza)
+	w					come who ma con più opzioni
+	echo <string>		fa la stampa su stdout della stringada ricercare, 
+						utile in caso di utilizzo di pattern matching * ? [] nel quale visualizza tutte le possibili estensioni trovate dal sistema
+						
+	chmod [u g o a] [+ -] [r w x] <filename>	permette dimodificare i diritti di accessi su <filename> 
+												u:user, g:group, o:others, a oppure omettere: all, +:aggiunge, -:toglie
+	chmod [diritti in ottale] <filename>	modifica attraverso i bit di protezione espressi in ottale 
+	chown <nome utente><filename>		permette di cambiare il proprietario del file o directory
+	chgrp <nome gruppo><filename>		permette di cambiare il gruppo del file o directory
+	
+	mkdir <nome directory>		crea una directory nel percosrco corrente
+	ln <srg><dest>/<newname>		crea un link hw di <srg> in <dest> con il nuovo nome <newname> se omesso il nome rimane uguale
+	ln -s <srg><dest>/<newname>		crea un link sw di <srg> in <dest> con il nuovo nome <newname> se omesso il nome rimane uguale
+	cp <srg><dest>/<newname>		crea una copia di <srg> in <dest> con il nuovo nome <newname> se omesso il nome rimane uguale
+	rmdir				cancella  directory solo se vuota
+	rm 					cancella definitivamente il file o directry 
+		-i				versione interattiva con l'utente, chiede se sei sicuro
+		-r				versione ricorsiva rimuove tutti i file o sottodirectory presenti nella directory da eliminare
+		
+	mv					consente di spostare un file (nel caso più semplice di rinominarlo)
+	cat <file1>...<filen>		concatena il contenuto dei file e lo visualizza su stdout
+	
+	
+	
+	
+	
+	
+	
+OPZIONI DEI COMANDI DA LINEA: non valgono per tutti i comandi, si possono abbinare gli uni con gli altri 
+	-l				mostra più informazione del comando che lo precedente
+	-a				mostra i file nascosti
+	-i 				versione interattiva del comando 
+	-A 				come -a però esclude . e ..
+	-d				versione relativa alle cartelle del comando
+	-R 				versione ricorsiva del comando (ordine alfabetico)
+	-r				come -R (ordine alfabetico contrario)
+	-t				versione che tiene conto dell'ultima modifica effattuata sui file 
+	
+	
+	
+	
+19/03	
+	SOTITUZIONI E INIBIZIONE DELLE SOSTITUZIONI
+	quando un comando viene eseguito avvengono svariate sostituzioni, nell'ordine:
+		1- sostituzione delle variabili/parametri
+		2- sostituzione dei comandi di cui viene richiesta l'espansione con `cmd`
+		3- sostituzione di wildcard ovvero le sostituzioni derivanti dai pattern matching
+		
+	queste si possono inibire:
+		'...'	inibisce tutti e tre i titpi di sostituzione
+		"..."	inibisce solo il 3° tipo (pattern matching)
+	
+	REDIREZIONE DELL'I\O	
+		valori:	0	stdin		implicitamente nella redirezione
+				1	stdout      implicitamente nella redirezione
+				2	stderr		da specificare nella redirezione
+				
+								
+				0< newinput 		stdin sostituito da newinput
+				1> newoutput		stdout sostituito da newoutput
+				2> /dev/null		stderr sostituito da /dev/null (si ignora in poche parole)
+				
+				N.B.:newinput e newoutput sono due file non esistono vengono creati vuoti e poi utilizzati
+				questi comandi valgono anche per programmi eseguibili, 
+				se in un programma viene usato stdin o stdout questo viene rediretto nei file specificati
+	
+		cmdfiltro < newinput		cambia il file di input per quell'esecuzione del comando
+		cmdfiltro > newoutput		cambia il file di output per quell'esecuzione del comando
+		cmdfiltro >> newoutput		come linea precedente ma in append
+									
+
+		I comandi filtri possono essere: 
+			N.B. questi comandi esistono anche in versione non filtro utilizzabili su tutti i file 
+			pwd
+			ls
+			cat 					legge quello che l'utente scrive su stdin e lo ridirige su stdout
+			cat < file1 > file		prende il contenuto da file 1 e lo ridirigere in file2
+
+22/03
+			more					come cat ma con impaginazione dell'output stile man, da più specifiche rispetto a cat e indica se il file che si sta cercando
+									di aprire non è file di testo, inoltre con il pattern matching visualizza tutti i file generati dalla ricerca di seguito 
+			sort 					ordina le linee nello standard input senza modificare il file, ricordantdoci che si utilizza l'ordinamento in base al codice ascii
+									per settare l'ordinamento: LC_ALL=C e come comando successivo export LC_ALL
+					-C				(check) controlla se il file in ingresso è ordinato 
+					-c				come il precedente  solo che visualizza anche la prima linea che interrompe l'ordinamento 
+					-r				ordine alfabetico inverso
+					-f				ordine ignorando le maiuscole e minuscole
+					-u 				le linee doppie vengono considerate e visualizzate solo una volta
+			grep <string>			cerca <string> nel file in ingresso 
+									visualizza tutte le linee in cui vi è l'occorrenza di <string> (CASE SENSITIVE)
+					-i				versione del precedente con funzionalità CASE INSENSITIVE
+					-v				riporta le linee che non contengono <string> (CASE SENSITIVE)
+					-n				visualizza anche il numero di linea
+					
+				per includere sintassi particolari e spazi string deve essere posta tra ' ' 
+				per caratteri speciali che hanno significato per la shell serve il carattere di escape \:
+					con '^string'		visualizza solo le linee che iniziano con string (CASE INSENSITIVE)
+					con 'string$'		visualizza solo le linee che terminano con string (CASE INSENSITIVE)
+			rev 					visualizza in modo inverso le linee
+			wc						visualizza linee word caratteri del file in ingresso
+					-l				solo linee
+					-w				solo word
+					-c				solo caratteri
+			head -<numlinee>		visualizza le prime numlinee del file in ingresso 
+			head -<numlinee>		visualizza le ultime numlinee del file in ingresso 
+			tee 					vedi piping dei comandi
+			
+		2>&1			per ridirigere due file nello stesso modo, occorre farlo dopo aver ridiretto il file da cui copiare la redirezione
+						(ridireziona 2 come hai ridirizionato 1)
+		echo $? 		ritorna l'esito del comando precedente 0 positivo diverso da 0 se esito negativo
+		
+	PIPING DEI COMANDI
+		<cmd1> | <cmd2>			collega l'stdout di cmd1 con l'stdin del cmd2
+		tee <file>				serve specialmente per salvare degli stati intermedi tra i due stadi del piping			
+								è posto tra due stadi di piping (uso del tubo a T in idraulica direziona un flusso su 2 rami)
+								es: ps | tee t | wc -l
+									usa lo stdout del cmd ps e lo usa come input sia sul file t che nel processo wc -l
+									risultato su t vi sarà come testo la lista dei processi e 
+									al termine del wc -l saranno stampate il numero di linee derivanti dall'uotput di ps
+		
+	ESECUZIONE IN PARALLELO
+		come nel caso dei piping dei comandi vi sono in esecuzione diversi processi in parallelo, 
+		anche l'utente può decidere di porre un processo in background
+		i processi in background possono essere molti mentre in foreground e possibile avere un solo processo 
+			
+		<cmd>&					pone in esecuzione il comando <cmd> in background, mostra a video il PID del processo 
+		kill PID 				termina il processo identificato da PID
+	
+24/03
+	ALTRI COMANDI
+		date					mostra data e ora corrente del sistema
+		diff <file1><file2>		mostra le differenze tra le linee di file1 e file2 anche le linee di differenza
+		find 
+		<cmd1>; <cmd2>			rende possibile srivere più comandi sulla stessa linea
+		<cmd> + "comment"		stampa in caso di stampa il commento comment dopo il comando
+								es: echo $HOME "è la home" --> /home/kevinmala00 è la home
+		
+	PROGRAMMAZIONE NELLO SHELL ($ simbolo della shell)
+			$chmod +x <File.sh>		rendere eseguibile il file di nome <File.sh> per convenzione chiameremo .sh tutti i file comandi ovvero che contengono dello scripting
+			$<File.sh>				lanciare il programma se non funziona utilizzare ./<File.sh>
+						NB 		#!/bin/sh		deve essere la prima riga di ogni file .sh rapp./resenta un commento che indica la shell a cui corrisponde tale linguaggio
+			sh -x
+			sh -v
+						NB 		il file comandi non è altro che un gruppo di comandi, viene lanciato come ogni altro comando; la shell cerca il file comandi
+								specificato in tutte le directory specificate da PATH(vedi dopo) se non lo trova mostra command not fouund
+			
+		Variabili in shell
+			$ a=	# commento			assegnamento di nulla alla variabile a
+			$ a=10	# commento			assegnamento del valore "10" alla variabile a
+			
+			NB 	alle variabili vengono assegnate delle stringhe (quindi ad a viene assegnata la stringa composta dal carattere "1" e dal carattere "0"
+				# 	commento fino a fine della linea
+				per far riferimento al valore della variabile si deve precedere il nome della variabile con il carattere $
+				es: b=$a	assegna il valore di a alla variabile b
+				es: echo $a	mostra il valore di a su stdout
+			NB le variabili rimangono in esistenza fino a che non si interrompe la sessione in caso siano definite in shell 
+				o fino al termine del processo relativo al file comandi in caso siano definite in file comandi 
+			
+			env				mostra l'ambiente corrente di ogni processo shell
+					-variabili di ambiente
+						queste a differenza delle variabili di shell come a in precedenza vengono ereditate (come COPIA) in caso di esecuzione di un processo figlio
+						le modifiche valgono solamente per il processo che le apporta in quanto sono appunto delle copie 
+						HOME 			contiene il valore della directory di accesso iniziale 
+						PATH 			contine il valore delle directory in cui la shell deve cercare i comandi da eseguire
+			export <var>	rende var una variabile ambiente
+			unset <var>		fa in modo che var non esista più (in caso di variabile di ambiente sparisce proprio dall'ambiente)
+					
+					
+29/03
+			eval	nel caso l'espansione effettuata richieda altre sostituzioni la shell viene forzata ad eseguire (diciamo in modo ricorsivo) con questo comando
+			
+	PASSAGGIO DI ARGOMENTI 
+		cmd <arg1> <arg2> ... <argn>
+		
+			gli argomenti o parametri sono rappresentati appunto da variabili posizionali in base all'ordine nella linea dei comandi
+			i parametri vengono passati dopo il file dei comandi separati da spazi
+		
+		$0	è il valore del comando		
+		$1	è il primo argomento 
+		$2	è il secondo argomento
+		$n	è l'n-esimo comando
+		
+		shift		provoca una traslazione dei parametri verso il basso, viene perso il primo, non ha effetto su $0
+		set
+		
+		$*			riporta la lista dei parametri
+		$#			riporta il numero dei parametri
+		$?			riporta l'esito dell'ultimo comando eseguito 0 positivo diverso da 0 negativo
+		$$			riporta il numero del processo in esecuzione (PID)
+		
+		
+	CONTROLLO DEL FLUSSO 
+	bisogna appunto ricordare che ogni comando ritornano l'esito
+	
+		- alternativa semplice
+				if <lista di comandi>
+				then <comandi>
+				[else <comandi>]
+				fi
+			
+			test 
+					-f <nomefile>				verifica se nomefile esiste come file
+					-d <nomedir>				verifica se nomedir esiste come cartella
+					-r -w -x <nomefile/dir>		verifica se i diritti di accesso specificati sono validi su nomefile/dir
+					<string1> = <string2>		verifica se le due stringhe sono uguali
+					<string1> != <string2>		verifica se le due stringhe sono diverse
+					-z <string>					verifica se la stringa è nulla
+					<string>					verifica che la stringa non sia nulla
+					<num1> operatore <num2>
+											operatore:
+												-eq	->	=
+												-ne	->	!=
+												-gt	->	>
+												-ge	->	>=
+												-lt	->	<
+												-le	->	<=
+											espressioni boleane:
+												-a	-> 	&& (and)
+												-o	->	|| (or)
+												!	->	! (not)
+												
+			read <var1> <var2>		consente di acquisire da stdin
+			echo 					come abbiamo visto in precedenza, utile in caso di ridirezione sul terminale corrente con /dev/tty
+			
+		- alternativa multipla
+				case $var in
+				pattern 1) comandi ;;
+				...
+				pattern i | pattern j | pattern k) comandi ;;
+				...
+				esac
+				
+				confronta il valore della variabile in formato stringa; nella seconda linea sono alternative come se fosse or
+		
+		- ripetizione enumerativa
+				for var [in list]
+				do 
+				comandi
+				done
+
+31/03			se in list viene omessa di default viene utilizzato in $*, ovvero viene utilizzata la lista dei paramemntri passati nel momento dell'invocazione dello script
+				
+		- ripetizioni non enumerativa
+				while <lista comandi>
+				do 
+				comandi
+				done
+				
+				while ripete fino che l'ultimo comando della lista comandi ha successo
+				
+				
+				until <list comandi>
+				do 
+				comandi 
+				done 
+				
+				until ripete fino a che la lista comandi non ha come esitp un insuccesso 
+	
